@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
 
 from app.core.database import get_session
-from app.core.segurity import (
+from ParteAdmin.backend.app.core.security import (
     AuthenticatedUser,
     create_access_token,
     get_current_active_user,

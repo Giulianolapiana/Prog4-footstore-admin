@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from fastapi import HTTPException
 from sqlmodel import Session
 
-from app.core.segurity import hash_password, verify_password
+from ParteAdmin.backend.app.core.security import hash_password, verify_password
 from app.modules.usuarios.models import Usuario
 from app.modules.usuarios.schemas import UsuarioCreate
 from app.modules.usuarios.unit_of_work import UsuarioUnitOfWork

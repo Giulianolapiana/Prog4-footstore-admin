@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status
 from sqlmodel import Session
 
 from app.core.database import get_session
-from app.core.segurity import AuthenticatedUser, get_current_active_user
+from ParteAdmin.backend.app.core.security import AuthenticatedUser, get_current_active_user
 from app.modules.usuarios.schemas import UsuarioCreate, UsuarioResponse
 from app.modules.usuarios.service import UsuarioService
 
