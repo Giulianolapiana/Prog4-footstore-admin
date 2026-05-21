@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends, Response, status
 from sqlmodel import Session
 
 from app.core.database import get_session
-from app.core.security import AuthenticatedUser, get_current_user, set_auth_cookie, clear_auth_cookie
+from app.core.security import AuthenticatedUser, set_auth_cookie, clear_auth_cookie
+from app.modules.auth.dependencies import get_current_user
 from app.modules.auth.schemas import UsuarioCreate, LoginRequest, UsuarioResponse
 from app.modules.auth.service import AuthService
 
