@@ -39,7 +39,7 @@ export const ModalProductos = ({
     onSubmit: async ({ value }) => {
       setApiError(null);
       
-      let finalImages = [...value.imagenes_url];
+      const finalImages = [...value.imagenes_url];
       const pendingUrl = nuevaImagenUrl.trim();
       if (pendingUrl && !finalImages.includes(pendingUrl)) {
         finalImages.push(pendingUrl);

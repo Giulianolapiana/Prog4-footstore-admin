@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getProducto } from "../services/product.service";
-import type { IProducto } from "../../../shared/types";
+
 
 export const ProductoDetallePage = () => {
   const { id } = useParams<{ id: string }>();
