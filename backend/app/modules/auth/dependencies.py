@@ -51,4 +51,4 @@ def require_roles(*roles_requeridos: str):
                 detail=f"Permisos insuficientes. Se requiere alguno de: {roles_requeridos}"
             )
         return current_user
-    return Depends(dependency)
+    return dependency

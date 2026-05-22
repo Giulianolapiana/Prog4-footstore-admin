@@ -2,6 +2,8 @@ from typing import Optional
 from sqlmodel import Field, SQLModel, Relationship
 from app.core.base_model import BaseEntity
 
+#agregar direcciones: list["DireccionEntrega"] = Relationship(back_populates="usuario") dentro de la clase Usuario para que quede bien linkeado).
+
 class UsuarioRol(SQLModel, table=True):
     __tablename__ = "usuario_rol"
     usuario_id: int = Field(foreign_key="usuario.id", primary_key=True)
@@ -32,3 +34,5 @@ class Usuario(BaseEntity, table=True):
         back_populates="usuarios",
         link_model=UsuarioRol,
     )
+
+    direcciones: list["DireccionEntrega"] = Relationship(back_populates="usuario")

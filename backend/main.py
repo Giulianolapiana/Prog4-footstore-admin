@@ -10,7 +10,8 @@ from app.modules.categorias.router import router as router_categorias
 from app.modules.ingredientes.router import router as router_ingredientes
 from app.modules.productos.router import router as router_productos
 from app.modules.auth.router import router as router_auth
-from app.modules.usuarios.router import router as router_usuarios
+from app.modules.direcciones.router import router as router_direcciones
+# from app.modules.usuarios.router import router as router_usuarios
 
 
 @asynccontextmanager
@@ -47,8 +48,7 @@ app.include_router(router_categorias)
 app.include_router(router_ingredientes)
 app.include_router(router_productos)
 app.include_router(router_auth)
-app.include_router(router_usuarios)
-
+app.include_router(router_direcciones)
 
 # ── Manejador de errores de validación de Pydantic ────────────────────────────
 # Traduce los mensajes automáticos de FastAPI al español

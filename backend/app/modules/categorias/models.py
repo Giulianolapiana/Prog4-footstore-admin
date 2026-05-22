@@ -1,17 +1,12 @@
 from typing import Optional, List, TYPE_CHECKING
-from datetime import datetime, timezone
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import Field, Relationship
+from app.core.base_model import BaseEntity
 from app.modules.productos.models import ProductoCategoria
 
 if TYPE_CHECKING:
     from app.modules.productos.models import Producto
 
-
-class Categoria(SQLModel, table=True):
-    """
-    Tabla de categorías de productos.
-    Soporta jerarquía (subcategorías) mediante parent_id (self-referential FK).
-    """
+class Categoria(BaseEntity, table=True):
     __tablename__ = "categoria"
 
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -19,11 +14,8 @@ class Categoria(SQLModel, table=True):
     nombre: str = Field(max_length=100, unique=True, nullable=False)
     descripcion: Optional[str] = Field(default=None)
     orden_display: int = Field(default=0)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    deleted_at: Optional[datetime] = Field(default=None)
 
-    # Relación N:M directa con Producto (via link_model)
+    # Relación N:M directa con Producto
     productos: List["Producto"] = Relationship(
         back_populates="categorias",
         link_model=ProductoCategoria

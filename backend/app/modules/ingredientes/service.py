@@ -78,7 +78,7 @@ class IngredienteService:
         return ingrediente
 
     def delete(self, ingrediente_id: int) -> None:
-        """Soft-delete: marca deleted_at sin borrar el registro."""
+        """Delega el Soft-delete al repositorio base."""
         with IngredienteUnitOfWork(self._session) as uow:
             ingrediente = uow.ingredientes.get_by_id(ingrediente_id)
             if not ingrediente or ingrediente.deleted_at is not None:
@@ -86,6 +86,5 @@ class IngredienteService:
                     status_code=404,
                     detail=f"Ingrediente con id={ingrediente_id} no encontrado."
                 )
-            ingrediente.deleted_at = datetime.now(timezone.utc)
-            ingrediente.updated_at = datetime.now(timezone.utc)
-            uow.ingredientes.add(ingrediente)
+            # Llamamos al delete del repositorio genérico que ya hace la magia
+            uow.ingredientes.delete(ingrediente)
