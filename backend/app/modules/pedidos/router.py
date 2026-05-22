@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends, Query, Path, status
 from sqlmodel import Session
 
 from app.core.database import get_session
-from app.core.security import require_roles, AuthenticatedUser, get_current_user
+from app.core.security import AuthenticatedUser
+from app.modules.auth.dependencies import require_roles, get_current_user
 from app.modules.pedidos.schemas import PedidoCreate, PedidoResponse, AvanzarEstadoRequest
 from app.modules.pedidos.service import PedidoService
 

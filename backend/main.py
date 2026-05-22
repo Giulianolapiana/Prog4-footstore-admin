@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.core.database import create_db_and_tables
+from app.modules.seed.seed import run_seed
 
 # Routers modulares
 from app.modules.categorias.router import router as router_categorias
@@ -11,22 +12,25 @@ from app.modules.ingredientes.router import router as router_ingredientes
 from app.modules.productos.router import router as router_productos
 from app.modules.auth.router import router as router_auth
 from app.modules.direcciones.router import router as router_direcciones
-# from app.modules.usuarios.router import router as router_usuarios
+from app.modules.pedidos.router import router as router_pedidos
+from app.modules.admin.router import router as router_admin
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Crea las tablas en la base de datos si no existen
+    # 1. Al arrancar, verificamos/creamos las tablas en PostgreSQL
     create_db_and_tables()
+    # 2. Corremos el seed para inyectar roles, estados y el admin por defecto
+    run_seed()
     yield
 
 
 app = FastAPI(
-    title="Sistema de Pedidos — API",
+    title="FoodStore — API",
     description=(
-        "API REST para gestión de productos, categorías e ingredientes.\n\n"
+        "API REST fullstack para FoodStore con parte Admin y Cliente\n\n"
         "**Stack:** FastAPI + SQLModel + PostgreSQL\n\n"
-        "**Parcial 1 — Programación IV · UTN**"
+        "**Parcial 2 — Programación IV · UTN**"
     ),
     version="5.0.0",
     lifespan=lifespan,
@@ -34,23 +38,32 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# ── CORS ──────────────────────────────────────────────────────────────────────
+# CORS 
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",  # Admin Vite
+        "http://localhost:5174",  # Store Vite
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ── Routers ───────────────────────────────────────────────────────────────────
-app.include_router(router_categorias)
-app.include_router(router_ingredientes)
-app.include_router(router_productos)
-app.include_router(router_auth)
-app.include_router(router_direcciones)
+# Routers 
 
-# ── Manejador de errores de validación de Pydantic ────────────────────────────
+app.include_router(router_auth, prefix="/api/v1")
+app.include_router(router_categorias, prefix="/api/v1")
+app.include_router(router_ingredientes, prefix="/api/v1")
+app.include_router(router_productos, prefix="/api/v1")
+app.include_router(router_direcciones, prefix="/api/v1")
+app.include_router(router_pedidos, prefix="/api/v1")
+app.include_router(router_admin, prefix="/api/v1")
+
+#  Manejador de errores de validación de Pydantic 
 # Traduce los mensajes automáticos de FastAPI al español
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -88,7 +101,10 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         content={"detail": errors},
     )
 
-
+# ── Endpoint de control ───────────────────────────────────────────────────────
 @app.get("/", tags=["Root"], summary="Health check")
 def read_root():
-    return {"status": "ok", "message": "API Sistema de Pedidos funcionando 🚀"}
+    return {
+        "status": "ok", 
+        "message": "API FoodStore funcionando correctamente. Visita /docs para ver Swagger."
+    }
