@@ -28,8 +28,10 @@ api.interceptors.response.use(
         if (error.response) {
             switch (error.response.status) {
                 case 401:
-                    // Si la cookie expiró o es inválida, lo mandamos al login
-                    window.location.href = '/login';
+                    // Si la cookie expiró o es inválida, evitamos loop infinito si ya estamos en /login
+                    if (window.location.pathname !== '/login') {
+                        window.location.href = '/login';
+                    }
                     break;
                 case 403:
                     console.error('No tenés permisos para esta acción (RBAC)');

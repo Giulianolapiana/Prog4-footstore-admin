@@ -68,7 +68,7 @@ def run_seed():
 
         # 7. Finalmente, hacemos commit de toda la transacción
         session.commit()
-        print("✅ Seed data cargada exitosamente.")
+        print("Seed data cargada exitosamente.")
 
 if __name__ == "__main__":
     run_seed()

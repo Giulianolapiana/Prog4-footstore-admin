@@ -18,6 +18,9 @@ import { getIngredientes } from "../../ingredientes/services/ingredients.service
 import type { IProducto } from "../../../shared/types";
 import { ModalProductos } from "../components/ModalProductos";
 
+// IMPORTAMOS NUESTRO HOOK DE PERMISOS
+import { usePermissions } from "../../../shared/hooks/usePermissions";
+
 type ModalState =
   | { type: "none" }
   | { type: "create" }
@@ -27,6 +30,9 @@ export const ProductosPage = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
+  // EXTRAEMOS LOS PERMISOS DEL USUARIO LOGUEADO
+  const { canCreateProduct, canEditProduct, canDeleteProduct } = usePermissions();
+
   const [modal, setModal] = useState<ModalState>({ type: "none" });
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -34,7 +40,7 @@ export const ProductosPage = () => {
     setModal({ type: "none" });
   };
 
-  //==========GET =====================//
+  //========== GET =====================//
   const {
     data: productos = [],
     isLoading: isProdLoading,
@@ -58,7 +64,7 @@ export const ProductosPage = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  //==========CREATE =====================//
+  //========== CREATE =====================//
   const createMutation = useMutation({
     mutationFn: createProducto,
     onSuccess: () => {
@@ -69,7 +75,7 @@ export const ProductosPage = () => {
     },
   });
 
-  //==========UPDATE =====================//
+  //========== UPDATE =====================//
   const editMutation = useMutation({
     mutationFn: ({
       id,
@@ -84,7 +90,7 @@ export const ProductosPage = () => {
     },
   });
 
-  //==========DELETE =====================//
+  //========== DELETE =====================//
   const deleteMutation = useMutation({
     mutationFn: deleteProducto,
     onSuccess: () => {
@@ -197,23 +203,32 @@ export const ProductosPage = () => {
             >
               Ver
             </button>
-            <button
-              onClick={() => setModal({ type: "edit", producto: info.row.original })}
-              className="px-3 py-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors"
-            >
-              Editar
-            </button>
-            <button
-              onClick={() => deleteMutation.mutate(info.row.original.id!)}
-              className="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
-            >
-              Eliminar
-            </button>
+            
+            {/*   Solo visible si tiene permiso de editar */}
+            {canEditProduct && (
+              <button
+                onClick={() => setModal({ type: "edit", producto: info.row.original })}
+                className="px-3 py-1.5 text-xs font-medium text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors"
+              >
+                Editar
+              </button>
+            )}
+
+            {/*  Solo visible si tiene permiso de borrar */}
+            {canDeleteProduct && (
+              <button
+                onClick={() => deleteMutation.mutate(info.row.original.id!)}
+                className="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+              >
+                Eliminar
+              </button>
+            )}
           </div>
         ),
       }),
     ],
-    [deleteMutation, navigate]
+    // Agregamos las variables de permisos a las dependencias del useMemo
+    [deleteMutation, navigate, canEditProduct, canDeleteProduct]
   );
 
   const table = useReactTable({
@@ -228,7 +243,6 @@ export const ProductosPage = () => {
   return (
     <>
       <div className="w-full max-w-4xl mx-auto px-4 py-6">
-        {/* Encabezado */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Productos</h1>
@@ -251,13 +265,16 @@ export const ProductosPage = () => {
               </svg>
             </div>
 
-            <button
-              onClick={() => setModal({ type: "create" })}
-              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors whitespace-nowrap"
-            >
-              <span className="text-base leading-none">+</span>
-              Nuevo producto
-            </button>
+            {/*   Solo visible si tiene permiso de crear */}
+            {canCreateProduct && (
+              <button
+                onClick={() => setModal({ type: "create" })}
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors whitespace-nowrap"
+              >
+                <span className="text-base leading-none">+</span>
+                Nuevo producto
+              </button>
+            )}
           </div>
         </div>
 
@@ -295,7 +312,6 @@ export const ProductosPage = () => {
 
           {filteredProductos.length === 0 && (
             <div className="py-16 text-center text-gray-400">
-              <p className="text-4xl mb-3"></p>
               <p className="font-medium text-gray-600">
                 No se encontraron productos
               </p>
