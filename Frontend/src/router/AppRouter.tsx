@@ -6,6 +6,7 @@ import { IngredientesPage } from "../features/ingredientes/pages/IngredientesPag
 import { AdminLayout } from "../shared/components/AdminLayout";
 import { AdminLoginPage } from "../features/auth/pages/AdminLoginPage";
 import { AdminDashboardPage } from "../features/dashboard/pages/AdminDashboardPage";
+import { PedidosPage } from '../features/pedidos/pages/PedidosPage';
 
 // protegemos las rutas con componentes que verifican autenticación y roles
 import { PrivateRoute } from "../shared/components/PrivateRoute";
@@ -66,16 +67,7 @@ export const router = createBrowserRouter([
                 children: [
                 {
                     path: "pedidos",
-                    element: (
-                    <div>
-                        <h1 className="font-headline-lg text-headline-lg text-on-surface">
-                        Pedidos
-                        </h1>
-                        <p className="font-body-md text-body-md text-on-surface-variant mt-2">
-                        Próximamente...
-                        </p>
-                    </div>
-                    ),
+                    element: <PedidosPage />,
                 },
                 ],
             },

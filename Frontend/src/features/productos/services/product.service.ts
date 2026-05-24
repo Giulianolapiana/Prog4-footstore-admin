@@ -14,7 +14,7 @@ export const getProducto = async (id: number): Promise<IProducto> => {
 export const createProducto = async (
   newProducto: Omit<IProducto, "id">
 ): Promise<IProducto> => {
-  const { data } = await api.post<IProducto>("/productos", newProducto);
+  const { data } = await api.post<IProducto>("/productos/", newProducto);
   return data;
 };
 
