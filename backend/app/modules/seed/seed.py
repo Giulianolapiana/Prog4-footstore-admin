@@ -3,7 +3,7 @@ from app.core.database import engine
 from app.core.security import hash_password
 from app.modules.auth.models import Rol, Usuario, UsuarioRol
 # Importá tus modelos de pedidos (asegurate de tenerlos creados con estos nombres o ajustalos luego)
-# from app.modules.pedidos.models import EstadoPedido, FormaPago
+from app.modules.pedidos.models import EstadoPedido, FormaPago
 
 def run_seed():
     """Ejecuta la carga de datos iniciales en la base de datos."""
@@ -25,29 +25,27 @@ def run_seed():
         session.add_all(roles)
         session.flush() # Flush para que la BD les asigne IDs
 
-        # 3. Cargar Estados de Pedido (Comentado hasta que crees los modelos de Pedidos)
-        """
-        estados = [
-            EstadoPedido(codigo="PENDIENTE", nombre="Pendiente"),
-            EstadoPedido(codigo="CONFIRMADO", nombre="Confirmado"),
-            EstadoPedido(codigo="EN_PREP", nombre="En Preparación"),
-            EstadoPedido(codigo="EN_CAMINO", nombre="En Camino"),
-            EstadoPedido(codigo="ENTREGADO", nombre="Entregado"),
-            EstadoPedido(codigo="CANCELADO", nombre="Cancelado"),
-        ]
-        session.add_all(estados)
-        """
+        # 3. Cargar Estados de Pedido
+        if not session.exec(select(EstadoPedido)).first():
+            estados = [
+                EstadoPedido(codigo="PENDIENTE", nombre="Pendiente"),
+                EstadoPedido(codigo="CONFIRMADO", nombre="Confirmado"),
+                EstadoPedido(codigo="EN_PREP", nombre="En Preparación"),
+                EstadoPedido(codigo="EN_CAMINO", nombre="En Camino"),
+                EstadoPedido(codigo="ENTREGADO", nombre="Entregado"),
+                EstadoPedido(codigo="CANCELADO", nombre="Cancelado"),
+            ]
+            session.add_all(estados)
 
-        # 4. Cargar Formas de Pago (Comentado hasta que crees los modelos de Pedidos)
-        """
-        formas = [
-            FormaPago(codigo="CASH", nombre="Efectivo"),
-            FormaPago(codigo="DEBIT", nombre="Tarjeta de Débito"),
-            FormaPago(codigo="CREDIT", nombre="Tarjeta de Crédito"),
-            FormaPago(codigo="MP", nombre="MercadoPago"),
-        ]
-        session.add_all(formas)
-        """
+        # 4. Cargar Formas de Pago
+        if not session.exec(select(FormaPago)).first():
+            formas = [
+                FormaPago(codigo="CASH", nombre="Efectivo"),
+                FormaPago(codigo="DEBIT", nombre="Tarjeta de Débito"),
+                FormaPago(codigo="CREDIT", nombre="Tarjeta de Crédito"),
+                FormaPago(codigo="MP", nombre="MercadoPago"),
+            ]
+            session.add_all(formas)
 
         # 5. Crear Usuario Admin por defecto
         admin_user = Usuario(

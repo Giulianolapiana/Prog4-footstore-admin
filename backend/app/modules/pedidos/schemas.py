@@ -2,6 +2,7 @@
 from typing import List, Optional
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
+from app.modules.direcciones.schemas import DireccionResponse
 
 # --- SCHEMAS PARA CREACIÓN (Desde el carrito) ---
 class DetallePedidoCreate(BaseModel):
@@ -52,6 +53,7 @@ class PedidoResponse(BaseModel):
     created_at: datetime
     estado_actual: EstadoPedidoResponse
     forma_pago: FormaPagoResponse
+    direccion_entrega: Optional[DireccionResponse] = None
     # En el listado a veces no mandamos los detalles para no sobrecargar, 
     # pero los dejamos opcionales para el endpoint get_by_id
     detalles: Optional[List[DetallePedidoResponse]] = None

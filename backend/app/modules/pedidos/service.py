@@ -46,6 +46,16 @@ class PedidoService:
                 if not producto or not producto.disponible:
                     raise HTTPException(status_code=400, detail=f"El producto con ID {item.producto_id} no está disponible.")
 
+                if producto.stock_cantidad < item.cantidad:
+                    raise HTTPException(
+                        status_code=400, 
+                        detail=f"Stock insuficiente para {producto.nombre}. Disponible: {producto.stock_cantidad}."
+                    )
+
+                # Reducir stock
+                producto.stock_cantidad -= item.cantidad
+                uow._session.add(producto)
+
                 subtotal = float(producto.precio_base) * item.cantidad
                 total_pedido += subtotal
 
@@ -67,7 +77,7 @@ class PedidoService:
                 total=total_pedido
             )
             uow.pedidos.add(nuevo_pedido)
-            uow.session.flush() # Forzamos la asignación del ID del pedido
+            uow._session.flush() # Forzamos la asignación del ID del pedido
 
             # 5. Guardar Detalles
             for det in detalles_a_guardar:
