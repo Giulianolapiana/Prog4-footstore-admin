@@ -7,6 +7,7 @@ import { AdminLayout } from "../shared/components/AdminLayout";
 import { AdminLoginPage } from "../features/auth/pages/AdminLoginPage";
 import { AdminDashboardPage } from "../features/dashboard/pages/AdminDashboardPage";
 import { PedidosPage } from '../features/pedidos/pages/PedidosPage';
+import { UsuariosPage } from '../features/usuarios/pages/UsuariosPage';
 
 // protegemos las rutas con componentes que verifican autenticación y roles
 import { PrivateRoute } from "../shared/components/PrivateRoute";
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
                 {
                     path: "ingredientes",
                     element: <IngredientesPage />,
+                },
+                {
+                    path: "usuarios",
+                    element: <UsuariosPage />,
                 },
                 ],
             },

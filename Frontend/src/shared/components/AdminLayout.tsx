@@ -22,6 +22,7 @@ export const AdminLayout = () => {
         { name: "Productos", path: "/productos", icon: "inventory_2", show: isAdmin() || hasRole("STOCK") },
         { name: "Categorías", path: "/categorias", icon: "category", show: isAdmin() },
         { name: "Ingredientes", path: "/ingredientes", icon: "liquor", show: isAdmin() },
+        { name: "Usuarios", path: "/usuarios", icon: "group", show: isAdmin() },
         { name: "Pedidos", path: "/pedidos", icon: "view_kanban", show: isAdmin() || hasRole("PEDIDOS") },
     ].filter(item => item.show); // Solo dejamos los permitidos
 

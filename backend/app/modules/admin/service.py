@@ -19,7 +19,7 @@ class AdminService:
             if rol_codigo:
                 query = query.join(Usuario.roles).where(Rol.codigo == rol_codigo)
                 
-            return uow.session.exec(query.offset(skip).limit(limit)).all()
+            return uow._session.exec(query.offset(skip).limit(limit)).all()
 
     def actualizar_usuario(self, usuario_id: int, data: UsuarioAdminUpdate) -> Usuario:
         with AuthUnitOfWork(self._session) as uow:
