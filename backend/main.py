@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from app.core.database import create_db_and_tables
 from app.modules.seed.seed import run_seed
 
-# Routers modulares
+
 from app.modules.categorias.router import router as router_categorias
 from app.modules.ingredientes.router import router as router_ingredientes
 from app.modules.productos.router import router as router_productos
@@ -38,7 +38,7 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# CORS 
+ 
 
 app.add_middleware(
     CORSMiddleware,
@@ -53,7 +53,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routers 
+ 
 
 app.include_router(router_auth, prefix="/api/v1")
 app.include_router(router_categorias, prefix="/api/v1")
@@ -63,8 +63,7 @@ app.include_router(router_direcciones, prefix="/api/v1")
 app.include_router(router_pedidos, prefix="/api/v1")
 app.include_router(router_admin, prefix="/api/v1")
 
-#  Manejador de errores de validación de Pydantic 
-# Traduce los mensajes automáticos de FastAPI al español
+
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     errors = []
@@ -72,7 +71,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         err_type = error.get("type")
         message = error.get("msg")
 
-        # Mapeo de errores comunes → español
+        
         if err_type == "missing":
             message = "Este campo es obligatorio"
         elif err_type == "string_too_long":
@@ -101,7 +100,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         content={"detail": errors},
     )
 
-# ── Endpoint de control ───────────────────────────────────────────────────────
+
 @app.get("/", tags=["Root"], summary="Health check")
 def read_root():
     return {

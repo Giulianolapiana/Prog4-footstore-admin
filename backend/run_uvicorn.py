@@ -2,7 +2,7 @@ import os
 import uvicorn
 
 BASE_DIR = os.path.dirname(__file__)
-# Asegurarse de trabajar desde el directorio del backend
+
 os.chdir(BASE_DIR)
 
 if __name__ == '__main__':
