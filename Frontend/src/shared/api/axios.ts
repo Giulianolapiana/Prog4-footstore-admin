@@ -8,7 +8,7 @@ export const api = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-    // ★ CRÍTICO: Esto hace que el navegador envíe la cookie httpOnly automáticamente
+    // CRÍTICO: Esto hace que el navegador envíe la cookie httpOnly automáticamente
     withCredentials: true,
 });
 
