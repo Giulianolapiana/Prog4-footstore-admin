@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { pedidoAdminService } from '../service/pedidoAdmin.service';
-import type { EstadoPedidoCodigo } from '../../../shared/types';
+import type { EstadoPedidoCodigo } from '../types';
 
 export const usePedidosAdmin = () => {
     const queryClient = useQueryClient();

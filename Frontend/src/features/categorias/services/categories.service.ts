@@ -1,5 +1,5 @@
 import { api } from "../../../shared/api/axios";
-import type { ICategoria } from "../../../shared/types";
+import type { ICategoria } from '../types';
 
 const BASE_URL = '/categorias';
 

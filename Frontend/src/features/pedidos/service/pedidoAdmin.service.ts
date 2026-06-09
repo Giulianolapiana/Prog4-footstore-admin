@@ -1,5 +1,5 @@
 import { api } from '../../../shared/api/axios';
-import type { IPedido, EstadoPedidoCodigo } from '../../../shared/types';
+import type { IPedido, EstadoPedidoCodigo } from '../types';
 
 export const pedidoAdminService = {
     // Trae todos los pedidos del sistema (como es Admin/Pedidos, el backend devuelve todo)

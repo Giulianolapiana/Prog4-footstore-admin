@@ -1,4 +1,4 @@
-import type { IProducto } from "../../../shared/types";
+import type { IProducto } from '../types';
 import { api } from "../../../shared/api/axios";
 
 export const getProductos = async (): Promise<IProducto[]> => {

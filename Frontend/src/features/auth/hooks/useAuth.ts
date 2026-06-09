@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { useAuthStore } from '../../../store/useAuthStore';
-import type { ILoginRequest } from '../../../shared/types';
+import type { ILoginRequest } from '../types';
 
 // ── 1. Verificar Sesión (Hidratación) ──
 export const useCheckAuth = () => {

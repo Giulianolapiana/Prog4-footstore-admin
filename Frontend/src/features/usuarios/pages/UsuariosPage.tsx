@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { usuariosService } from '../services/usuarios.service';
 import { useAuthStore } from '../../../store/useAuthStore';
-import type { IUsuario } from '../../../shared/types';
+import type { IUsuario } from '../../auth/types';
 
 export const UsuariosPage = () => {
     const queryClient = useQueryClient();

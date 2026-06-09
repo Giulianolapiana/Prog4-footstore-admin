@@ -12,7 +12,7 @@ import {
   updateIngrediente,
   deleteIngrediente,
 } from "../services/ingredients.service";
-import type { IIngrediente } from "../../../shared/types";
+import type { IIngrediente } from '../types';
 import { ModalIngredientes } from "../components/ModalIngredientes";
 
 type ModalState =

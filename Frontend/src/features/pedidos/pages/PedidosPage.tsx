@@ -1,6 +1,6 @@
 import { usePedidosAdmin } from "../hook/usePedidosAdmin";
 import { usePermissions } from "../../../shared/hooks/usePermissions";
-import type { IPedido, EstadoPedidoCodigo } from "../../../shared/types";
+import type { IPedido, EstadoPedidoCodigo } from '../types';
 
 export const PedidosPage = () => {
     const {

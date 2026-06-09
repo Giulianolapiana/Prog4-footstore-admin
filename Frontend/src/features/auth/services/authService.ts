@@ -1,5 +1,5 @@
 import { api } from '../../../shared/api/axios';
-import type { ILoginRequest, IUsuario } from '../../../shared/types';
+import type { ILoginRequest, IUsuario } from '../types';
 
 export const authService = {
     login: async (credentials: ILoginRequest): Promise<IUsuario> => {

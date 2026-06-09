@@ -12,7 +12,7 @@ import {
   updateCategoria,
   deleteCategoria,
 } from "../services/categories.service";
-import type { ICategoria } from "../../../shared/types";
+import type { ICategoria } from '../types';
 import { ModalCategorias } from "../components/ModalCategorias";
 
 type ModalState =

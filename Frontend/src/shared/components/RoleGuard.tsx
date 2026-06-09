@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
-import type { IRol } from '../types';
+import type { IRol } from '../../features/auth/types';
 
 interface RoleGuardProps {
     allowedRoles: IRol['codigo'][];

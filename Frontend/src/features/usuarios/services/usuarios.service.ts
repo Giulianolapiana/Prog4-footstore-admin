@@ -1,5 +1,5 @@
 import { api } from '../../../shared/api/axios';
-import type { IUsuario } from '../../../shared/types';
+import type { IUsuario } from '../../auth/types';
 
 export const usuariosService = {
     getUsuarios: async (): Promise<IUsuario[]> => {

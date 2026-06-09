@@ -1,4 +1,4 @@
-import type { ICategoria } from "../../../shared/types";
+import type { ICategoria } from '../types';
 import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
 

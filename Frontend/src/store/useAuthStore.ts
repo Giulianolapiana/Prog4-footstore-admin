@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { IUsuario, IRol } from '../shared/types';
+import type { IUsuario, IRol } from '../features/auth/types';
 
 interface AuthState {
     user: IUsuario | null;
