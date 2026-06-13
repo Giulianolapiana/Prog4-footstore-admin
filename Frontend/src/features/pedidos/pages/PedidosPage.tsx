@@ -1,8 +1,15 @@
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { usePedidosAdmin } from "../hook/usePedidosAdmin";
 import { usePermissions } from "../../../shared/hooks/usePermissions";
+import { useWsStore } from "../../../store/useWsStore";
 import type { IPedido, EstadoPedidoCodigo } from '../types';
 
 export const PedidosPage = () => {
+
+    const queryClient = useQueryClient();
+    const { lastMessage, clearLastMessage } = useWsStore();
+
     const {
         pedidos,
         isLoading,
@@ -13,7 +20,15 @@ export const PedidosPage = () => {
     } = usePedidosAdmin();
     const { canManageOrders, canCancelOrders } = usePermissions();
 
-    // Definición de las columnas del tablero Kanban
+    //  Si llega un mensaje, invalidamos la cache para refrescar el tablero
+    useEffect(() => {
+        if (lastMessage) {
+            console.log(`[Kanban] Recibido evento WS '${lastMessage.event}' para el pedido ${lastMessage.pedido_id}. Actualizando tablero...`);
+            queryClient.invalidateQueries({ queryKey: ['admin', 'pedidos'] });
+            clearLastMessage();
+        }
+    }, [lastMessage, queryClient, clearLastMessage]);
+
     const columnas: {
         titulo: string;
         color: string;
@@ -30,18 +45,17 @@ export const PedidosPage = () => {
                 estados: ["EN_PREP"],
             },
             {
-                titulo: "En Reparto / Camino",
-                color: "border-t-indigo-500 bg-indigo-50/20",
-                estados: ["EN_CAMINO"],
+                titulo: "Finalizados",
+                color: "border-t-emerald-500 bg-emerald-50/10",
+                estados: ["ENTREGADO"],
             },
             {
-                titulo: "Finalizados",
-                color: "border-t-gray-300 bg-gray-50/10",
-                estados: ["ENTREGADO", "CANCELADO"],
+                titulo: "Cancelados",
+                color: "border-t-red-300 bg-red-50/10",
+                estados: ["CANCELADO"],
             },
         ];
 
-    // Helper para saber cuál es el siguiente paso lógico en el flujo
     const getSiguienteEstado = (
         actual: EstadoPedidoCodigo,
     ): EstadoPedidoCodigo | null => {
@@ -51,15 +65,13 @@ export const PedidosPage = () => {
             case "CONFIRMADO":
                 return "EN_PREP";
             case "EN_PREP":
-                return "EN_CAMINO";
-            case "EN_CAMINO":
-                return "ENTREGADO";
+                return "ENTREGADO"; // Salto directo a ENTREGADO
             default:
                 return null;
         }
     };
 
-    // Helper para textos amigables de botones
+
     const getTextoBotonAccion = (actual: EstadoPedidoCodigo): string => {
         switch (actual) {
             case "PENDIENTE":
@@ -67,8 +79,6 @@ export const PedidosPage = () => {
             case "CONFIRMADO":
                 return "Empezar Cocción";
             case "EN_PREP":
-                return "Enviar con Moto";
-            case "EN_CAMINO":
                 return "Marcar Entregado";
             default:
                 return "";
@@ -102,7 +112,6 @@ export const PedidosPage = () => {
             {/* Grid del Tablero Kanban */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 flex-1 items-start">
                 {columnas.map((col) => {
-                    // Filtramos los pedidos que pertenecen a los estados de esta columna
                     const pedidosColumna = pedidos.filter((p) =>
                         col.estados.includes(p.estado_actual.codigo),
                     );
@@ -144,7 +153,7 @@ export const PedidosPage = () => {
                                                     className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${pedido.estado_actual.codigo === "CANCELADO"
                                                             ? "bg-red-100 text-red-700"
                                                             : pedido.estado_actual.codigo === "ENTREGADO"
-                                                                ? "bg-gray-100 text-gray-700"
+                                                                ? "bg-emerald-100 text-emerald-700"
                                                                 : pedido.estado_actual.codigo === "PENDIENTE"
                                                                     ? "bg-amber-100 text-amber-700 font-bold animate-pulse"
                                                                     : "bg-blue-100 text-blue-700"
@@ -161,7 +170,7 @@ export const PedidosPage = () => {
                                                     {pedido.direccion_entrega?.numero || ''}
                                                 </p>
                                                 <p className="text-gray-400">
-                                                    💳 {pedido.forma_pago.nombre}
+                                                    💳 {pedido.forma_pago?.nombre || 'Desconocido'}
                                                 </p>
                                             </div>
 
@@ -187,7 +196,7 @@ export const PedidosPage = () => {
                                                 </ul>
                                                 <div className="mt-2 pt-1 border-t border-gray-200 flex justify-between font-bold text-gray-950 text-[13px]">
                                                     <span>Total:</span>
-                                                    <span>${pedido.total.toLocaleString("es-AR")}</span>
+                                                    <span>${Number(pedido.total).toLocaleString("es-AR")}</span>
                                                 </div>
                                             </div>
 

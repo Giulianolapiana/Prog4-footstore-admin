@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useLogout } from "../../features/auth/hooks/useAuth";
+import { useEffect } from "react";
+import { useWsStore } from "../../store/useWsStore";
 
 export const AdminLayout = () => {
     const location = useLocation();
@@ -10,13 +12,23 @@ export const AdminLayout = () => {
     // 1. Traemos la info del usuario y la función de logout
     const { user, isAdmin, hasRole } = useAuthStore();
     const { mutate: logout, isPending: isLoggingOut } = useLogout();
+    const { connect, disconnect, isConnected } = useWsStore();
+
+    useEffect(() => {
+        if (user) {
+            connect();
+        }
+        return () => {
+            disconnect();
+        };
+    }, [user, connect, disconnect]);
 
     const isActive = (path: string) =>
         path === "/"
             ? location.pathname === "/"
             : location.pathname.startsWith(path);
 
-    // 2. Filtramos el menú basándonos en los roles del usuario. Cada item tiene una propiedad `show` que determina si se muestra o no.
+    // Filtramos el menú basándonos en los roles del usuario. Cada item tiene una propiedad `show` que determina si se muestra o no.
     const navItems = [
         { name: "Panel", path: "/", icon: "dashboard", show: true },
         { name: "Productos", path: "/productos", icon: "inventory_2", show: isAdmin() || hasRole("STOCK") },
@@ -24,7 +36,7 @@ export const AdminLayout = () => {
         { name: "Ingredientes", path: "/ingredientes", icon: "liquor", show: isAdmin() },
         { name: "Usuarios", path: "/usuarios", icon: "group", show: isAdmin() },
         { name: "Pedidos", path: "/pedidos", icon: "view_kanban", show: isAdmin() || hasRole("PEDIDOS") },
-    ].filter(item => item.show); // Solo dejamos los permitidos
+    ].filter(item => item.show); 
 
     return (
         <div className="flex min-h-screen bg-surface-container-low text-on-surface">
@@ -128,6 +140,11 @@ export const AdminLayout = () => {
                         </button>
                     </div>
                 </header>
+                {!isConnected && (
+                    <div className="bg-amber-100 px-4 py-1 text-center text-xs text-amber-800 font-bold w-full">
+                        Sin coneccion en tiempo real. Intentando reconectar...
+                    </div>
+                )}
 
                 <div className="px-margin-mobile md:px-margin-desktop py-6 flex-1">
                     <Outlet />
