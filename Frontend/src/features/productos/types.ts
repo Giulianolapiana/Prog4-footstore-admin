@@ -1,4 +1,3 @@
-// Tipos propios de la feature de Productos
 import type { ICategoria } from '../categorias/types';
 import type { IIngrediente } from '../ingredientes/types';
 
@@ -14,4 +13,13 @@ export interface IProducto {
     ingrediente_ids?: number[];
     categorias?: ICategoria[];
     ingredientes?: IIngrediente[];
+}
+
+export interface IImage {
+    public_id: string;
+    secure_url: string;
+    width?: number;
+    height?: number;
+    format?: string;
+    resource_type?: string;
 }

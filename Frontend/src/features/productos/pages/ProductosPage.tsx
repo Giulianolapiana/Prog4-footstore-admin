@@ -15,7 +15,7 @@ import {
 } from "../services/product.service";
 import { getCategorias } from "../../categorias/services/categories.service";
 import { getIngredientes } from "../../ingredientes/services/ingredients.service";
-import type { IProducto } from "../../../shared/types";
+import type { IProducto, IIngrediente, ICategoria } from "../../../shared/types";
 import { ModalProductos } from "../components/ModalProductos";
 
 // IMPORTAMOS NUESTRO HOOK DE PERMISOS
@@ -135,7 +135,7 @@ export const ProductosPage = () => {
           return (
             <div className="flex items-center gap-2">
               <span className="font-medium text-gray-800 break-words line-clamp-2 max-w-[200px]" title={row.nombre}>{row.nombre}</span>
-              {row.ingredientes?.some((i) => i.es_alergeno) && (
+              {row.ingredientes?.some((i: IIngrediente) => i.es_alergeno) && (
                 <span title="Contiene alérgenos" className="text-amber-500 cursor-help text-xs font-bold">
                   (A)
                 </span>
@@ -148,7 +148,7 @@ export const ProductosPage = () => {
         header: "Categoría",
         cell: (info) => {
           const cats = info.getValue();
-          return <span className="text-gray-500">{cats?.map((c) => c.nombre).join(", ") ?? "—"}</span>;
+          return <span className="text-gray-500">{cats?.map((c: ICategoria) => c.nombre).join(", ") ?? "—"}</span>;
         },
       }),
       columnHelper.accessor("precio_base", {

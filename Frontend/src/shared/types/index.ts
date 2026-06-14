@@ -19,10 +19,10 @@ export interface IPaginatedResponse<T> {
 }
 
 // Re-exportaciones para compatibilidad con imports anteriores
-export type { IRol, IUsuario, ILoginRequest } from '../features/auth/types';
-export type { ICategoria } from '../features/categorias/types';
-export type { IIngrediente } from '../features/ingredientes/types';
-export type { IProducto } from '../features/productos/types';
+export type { IRol, IUsuario, ILoginRequest } from '../../features/auth/types';
+export type { ICategoria } from '../../features/categorias/types';
+export type { IIngrediente } from '../../features/ingredientes/types';
+export type { IProducto } from '../../features/productos/types';
 export type {
     EstadoPedidoCodigo,
     IEstadoPedido,
@@ -30,4 +30,4 @@ export type {
     IFormaPago,
     IDireccionEntrega,
     IPedido,
-} from '../features/pedidos/types';
+} from '../../features/pedidos/types';

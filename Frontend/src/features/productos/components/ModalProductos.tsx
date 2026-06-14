@@ -3,6 +3,7 @@ import type { ICategoria } from '../../categorias/types';
 import type { IIngrediente } from '../../ingredientes/types';
 import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
+import { ImageUploader } from './ImageUploader'; 
 
 type Props = {
   productActive: IProducto | null;
@@ -21,7 +22,7 @@ export const ModalProductos = ({
   handleCreate,
   handleUpdate,
 }: Props) => {
-  const [nuevaImagenUrl, setNuevaImagenUrl] = useState("");
+
   const [apiError, setApiError] = useState<string | null>(null);
 
   const form = useForm({
@@ -40,12 +41,6 @@ export const ModalProductos = ({
     },
     onSubmit: async ({ value }) => {
       setApiError(null);
-      
-      const finalImages = [...value.imagenes_url];
-      const pendingUrl = nuevaImagenUrl.trim();
-      if (pendingUrl && !finalImages.includes(pendingUrl)) {
-        finalImages.push(pendingUrl);
-      }
 
       const productoData: any = {
         nombre: value.nombre,
@@ -53,7 +48,8 @@ export const ModalProductos = ({
         precio_base: Number(value.precio_base),
         stock_cantidad: Number(value.stock_cantidad),
         disponible: value.disponible,
-        imagenes_url: finalImages.length > 0 ? finalImages : undefined,
+        // imágenes subidas a Cloudinary directamente
+        imagenes_url: value.imagenes_url.length > 0 ? value.imagenes_url : undefined,
         categoria_ids: value.categoria_ids,
         ingredientes: value.ingredientes,
       };
@@ -190,18 +186,18 @@ export const ModalProductos = ({
               )}
             />
 
-            {/* Imágenes */}
+            {/* IMAGENES ACTUALIZADA CON CLOUDINARY */}
             <form.Field
               name="imagenes_url"
               children={(field) => {
                 const urls = field.state.value as string[];
-                const agregarImagen = () => {
-                  const url = nuevaImagenUrl.trim();
+                
+                const agregarImagenCloudinary = (url: string) => {
                   if (url && !urls.includes(url)) {
                     field.handleChange([...urls, url]);
-                    setNuevaImagenUrl("");
                   }
                 };
+                
                 const eliminarImagen = (idx: number) => {
                   field.handleChange(urls.filter((_, i) => i !== idx));
                 };
@@ -209,26 +205,23 @@ export const ModalProductos = ({
                 return (
                   <div className="flex flex-col gap-2">
                     <label className="text-sm font-medium text-gray-600">
-                      Imagen (URL)
+                      Imágenes del Producto
                     </label>
 
+                    {/* Previsualización de imágenes ya subidas */}
                     {urls.length > 0 && (
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2 mb-2">
                         {urls.map((url, idx) => (
-                          <div key={idx} className="relative group w-16 h-16">
+                          <div key={idx} className="relative group w-20 h-20">
                             <img
                               src={url}
                               alt={`img-${idx}`}
-                              className="w-16 h-16 object-cover rounded-lg border border-gray-200"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src =
-                                  "https://placehold.co/64x64?text=?";
-                              }}
+                              className="w-20 h-20 object-cover rounded-lg border border-gray-200"
                             />
                             <button
                               type="button"
                               onClick={() => eliminarImagen(idx)}
-                              className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-red-500 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
                             >
                               ✕
                             </button>
@@ -237,43 +230,12 @@ export const ModalProductos = ({
                       </div>
                     )}
 
-                    <div className="flex gap-2">
-                      <input
-                        type="url"
-                        value={nuevaImagenUrl}
-                        onChange={(e) => setNuevaImagenUrl(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            agregarImagen();
-                          }
-                        }}
-                        placeholder="https://ejemplo.com/imagen.jpg"
-                        className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                      />
-                      <button
-                        type="button"
-                        onClick={agregarImagen}
-                        className="px-3 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors"
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    {nuevaImagenUrl && (
-                      <div className="flex justify-center p-1.5 border border-dashed border-emerald-200 rounded-lg bg-emerald-50/20">
-                        <img
-                          src={nuevaImagenUrl}
-                          alt="Escribiendo..."
-                          className="max-h-20 rounded-md opacity-70 object-cover"
-                          onError={(e) => (e.currentTarget.style.display = 'none')}
-                        />
-                      </div>
-                    )}
-
-                    <p className="text-xs text-gray-400">
-                      Presioná Enter o en + para agregar cada URL
-                    </p>
+                    {/* Componente Drag & Drop  */}
+                    <ImageUploader 
+                      value={null} // Pasamos null para que siempre muestre la caja de subida
+                      onChange={(url) => agregarImagenCloudinary(url)}
+                      onRemove={() => {}}
+                    />
                   </div>
                 );
               }}
@@ -440,31 +402,32 @@ export const ModalProductos = ({
             </div>
           )}
           <div className="flex items-center justify-end gap-3 px-6 py-4">
-          <button
-            onClick={handleCloseModal}
-            className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            Cancelar
-          </button>
-          <form.Subscribe
-            selector={(state) => ({
-              canSubmit: state.canSubmit,
-              isSubmitting: state.isSubmitting,
-              categoria_ids: state.values.categoria_ids,
-            })}
-          >
-            {({ canSubmit, isSubmitting, categoria_ids }) => (
-              <button
-                type="submit"
-                form="producto-form"
-                disabled={!canSubmit || isSubmitting || categoria_ids.length === 0}
-                className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50"
-              >
-                {productActive ? "Guardar cambios" : "Crear producto"}
-              </button>
-            )}
-          </form.Subscribe>
-        </div>
+            <button
+              onClick={handleCloseModal}
+              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              Cancelar
+            </button>
+            <form.Subscribe
+              selector={(state) => ({
+                canSubmit: state.canSubmit,
+                isSubmitting: state.isSubmitting,
+                categoria_ids: state.values.categoria_ids,
+              })}
+            >
+              {({ canSubmit, isSubmitting, categoria_ids }) => (
+                <button
+                  type="submit"
+                  form="producto-form"
+                  disabled={!canSubmit || isSubmitting || categoria_ids.length === 0}
+                  className="px-4 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isSubmitting && <span className="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full"></span>}
+                  {productActive ? "Guardar cambios" : "Crear producto"}
+                </button>
+              )}
+            </form.Subscribe>
+          </div>
         </div>
       </div>
     </div>
