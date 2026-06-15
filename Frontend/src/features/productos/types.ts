@@ -16,10 +16,11 @@ export interface IProducto {
 }
 
 export interface IImage {
+    id: number;
     public_id: string;
-    secure_url: string;
+    url: string;
+    filename?: string;
     width?: number;
     height?: number;
     format?: string;
-    resource_type?: string;
 }

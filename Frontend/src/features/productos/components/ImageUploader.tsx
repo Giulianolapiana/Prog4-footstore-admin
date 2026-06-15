@@ -3,13 +3,13 @@ import { useMutation } from "@tanstack/react-query";
 import { uploadImages, deleteImage } from "../api/images";
 
 interface ImageUploaderProps {
-    value?: string | null; // URL de la imagen actual
-    imageId?: string | null; // ID en nuestra tabla de imagenes (o public_id)
-    onChange: (url: string, id: string) => void; // Callback para el form
+    value?: string | null; 
+    publicId?: string | null; 
+    onChange: (url: string, publicId?: string) => void; 
     onRemove: () => void;
 }
 
-export const ImageUploader = ({ value, imageId, onChange, onRemove }: ImageUploaderProps) => {
+export const ImageUploader = ({ value, publicId, onChange, onRemove }: ImageUploaderProps) => {
     const [dragging, setDragging] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -17,7 +17,7 @@ export const ImageUploader = ({ value, imageId, onChange, onRemove }: ImageUploa
         mutationFn: (files: File[]) => uploadImages(files),
         onSuccess: (data) => {
             if (data.length > 0) {
-                onChange(data[0].secure_url, data[0].public_id);
+                onChange(data[0].url, data[0].public_id);
             }
         },
     });
@@ -44,14 +44,13 @@ export const ImageUploader = ({ value, imageId, onChange, onRemove }: ImageUploa
     };
 
     const handleRemoveClick = () => {
-        if (imageId) {
-            deleteMutation.mutate(imageId);
+        if (publicId) {
+            deleteMutation.mutate(publicId);
         } else {
             onRemove();
         }
     };
 
-    // Si ya hay una imagen, mostramos la previu
     if (value) {
         return (
             <div className="relative group rounded-xl overflow-hidden border border-outline-variant/30 h-48 w-full bg-surface-container">
@@ -71,7 +70,6 @@ export const ImageUploader = ({ value, imageId, onChange, onRemove }: ImageUploa
         );
     }
 
-    // Si no hay imagen, mostramos el Dropzone adaptado chiroli
     return (
         <div
             onClick={() => inputRef.current?.click()}
@@ -107,7 +105,6 @@ export const ImageUploader = ({ value, imageId, onChange, onRemove }: ImageUploa
                 )}
             </div>
 
-            {/* Manejo de errores */}
             {uploadMutation.isError && (
                  <p className="text-xs text-error font-semibold text-center mt-2 px-4">
                      Error: {(uploadMutation.error as Error).message}
