@@ -1,11 +1,43 @@
 import { useAuthStore } from '../../../store/useAuthStore';
+import { 
+  useResumenKpis, 
+  useVentasPeriodo, 
+  useProductosTop, 
+  usePedidosPorEstado, 
+  useIngresosPorFormaPago 
+} from '../hooks/useDashboard';
+import { KpiCards } from '../components/KpiCards';
+import { VentasChart } from '../components/VentasChart';
+import { ProductosChart } from '../components/ProductosChart';
+import { EstadosChart } from '../components/EstadosChart';
+import { IngresosChart } from '../components/IngresosChart';
 
 export const AdminDashboardPage = () => {
   const { user } = useAuthStore();
 
+  const today = new Date();
+  const lastMonth = new Date();
+  lastMonth.setMonth(today.getMonth() - 1);
+
+  const formatQueryDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const { data: resumen, isLoading: loadingResumen } = useResumenKpis();
+  const { data: ventas, isLoading: loadingVentas } = useVentasPeriodo(
+    formatQueryDate(lastMonth), 
+    formatQueryDate(today), 
+    'day'
+  );
+  const { data: topProductos, isLoading: loadingProductos } = useProductosTop(5);
+  const { data: pedidosEstado, isLoading: loadingEstados } = usePedidosPorEstado();
+  const { data: ingresos, isLoading: loadingIngresos } = useIngresosPorFormaPago();
+
   return (
     <>
-      {/* Marca de agua (Watermark) de fondo a pantalla completa */}
       <div 
         className="fixed inset-0 z-0 opacity-15 pointer-events-none"
         style={{
@@ -16,33 +48,29 @@ export const AdminDashboardPage = () => {
         }}
       />
 
-      {/* Contenedor de la Tarjeta de Bienvenida */}
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-[70vh] text-center animate-fade-in p-4">
-        
-        {/* Tarjeta Glassmorphism */}
-        <div className="space-y-6 max-w-2xl mx-auto bg-surface/80 backdrop-blur-md p-10 rounded-3xl shadow-xl border border-white/40">
-          <div className="w-20 h-20 mx-auto bg-primary text-on-primary rounded-3xl flex items-center justify-center mb-6 shadow-lg shadow-primary/20">
-            <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-              waving_hand
-            </span>
-          </div>
-          
-          <h1 className="text-4xl md:text-5xl font-extrabold text-on-surface tracking-tight leading-tight">
-            ¡Bienvenido, <span className="text-primary">{user?.nombre || 'Equipo'}</span>!
-          </h1>
-          
-          <p className="text-lg md:text-xl text-on-surface-variant font-medium">
-            Has ingresado al sistema como{' '}
-            <span className="text-secondary font-bold px-3 py-1 bg-secondary-container/50 rounded-lg uppercase text-sm tracking-wider border border-secondary/20 shadow-sm">
-              {user?.roles?.[0]?.nombre || 'Usuario'}
-            </span>
-          </p>
-          
-          <p className="text-on-surface-variant pt-6 border-t border-outline-variant/30 mt-8 text-base">
-            Seleccioná una opción en el menú lateral para empezar a trabajar con el sistema.
-          </p>
+      <div className="relative z-10 p-6 space-y-6">
+        <div className="flex flex-col mb-8">
+            <h1 className="text-3xl font-extrabold tracking-tight">
+              Dashboard de {user?.nombre || 'Administrador'}
+            </h1>
+            <p className="text-on-surface-variant">Resumen y métricas clave del negocio.</p>
         </div>
 
+        {loadingResumen ? (
+           <div>Cargando KPIs...</div>
+        ) : (
+           resumen && <KpiCards data={resumen} />
+        )}
+
+        <div className="grid gap-6 md:grid-cols-2">
+            {loadingVentas ? <div>Cargando Ventas...</div> : (ventas && <VentasChart data={ventas} />)}
+            {loadingProductos ? <div>Cargando Productos...</div> : (topProductos && <ProductosChart data={topProductos} />)}
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 mt-6">
+            {loadingEstados ? <div>Cargando Estados...</div> : (pedidosEstado && <EstadosChart data={pedidosEstado} />)}
+            {loadingIngresos ? <div>Cargando Ingresos...</div> : (ingresos && <IngresosChart data={ingresos} />)}
+        </div>
       </div>
     </>
   );
