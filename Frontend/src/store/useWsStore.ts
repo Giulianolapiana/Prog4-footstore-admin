@@ -35,8 +35,11 @@ export const useWsStore = create<WsState>((set, get) => {
     isIntentionallyClosed = false;
     
     // Obtenemos la URL del backend desde el entorno
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-    const wsUrl = `${baseUrl.replace(/^http/, 'ws')}/ws/pedidos`;
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+    
+    // El websocket está montado en la raíz del servidor, no en /api/v1
+    const baseHost = baseUrl.replace('/api/v1', '');
+    const wsUrl = `${baseHost.replace(/^http/, 'ws')}/ws/pedidos`;
     
     const ws = new WebSocket(wsUrl);
 

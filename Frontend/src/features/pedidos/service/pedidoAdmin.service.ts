@@ -4,7 +4,7 @@ import type { IPedido, EstadoPedidoCodigo } from '../types';
 export const pedidoAdminService = {
     // Trae todos los pedidos del sistema (como es Admin/Pedidos, el backend devuelve todo)
     getPedidos: async (): Promise<IPedido[]> => {
-        const { data } = await api.get<IPedido[]>('/pedidos');
+        const { data } = await api.get<IPedido[]>('/pedidos/');
         return data;
     },
 

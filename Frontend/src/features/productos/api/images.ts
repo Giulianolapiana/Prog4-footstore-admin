@@ -12,7 +12,7 @@ export const uploadImages = async (files: File[]): Promise<IImage[]> => {
     const API_URL = import.meta.env.VITE_API_URL + '/api/v1';
 
     // Usamos axios puro para evitar el override de Content-Type: application/json
-    const { data } = await axios.post(`${API_URL}/images/upload`, formData, {
+    const { data } = await axios.post(`${API_URL}/uploads/upload`, formData, {
         withCredentials: true
     });
     return data;
@@ -20,5 +20,5 @@ export const uploadImages = async (files: File[]): Promise<IImage[]> => {
 
 // Elimina una imagen del CDN y de la base de datos
 export const deleteImage = async (public_id: string): Promise<void> => {
-    await api.delete(`/images/${encodeURIComponent(public_id)}`);
+    await api.delete(`/uploads/${encodeURIComponent(public_id)}`);
 };

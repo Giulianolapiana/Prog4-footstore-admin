@@ -35,9 +35,9 @@ export const PedidosPage = () => {
                 estados: ["PENDIENTE", "CONFIRMADO"],
             },
             {
-                titulo: "En Cocina / Prep",
+                titulo: "En Cocina / Camino",
                 color: "border-t-blue-500 bg-blue-50/20",
-                estados: ["EN_PREP"],
+                estados: ["EN_PREP", "EN_CAMINO"],
             },
             {
                 titulo: "Finalizados",
@@ -60,7 +60,9 @@ export const PedidosPage = () => {
             case "CONFIRMADO":
                 return "EN_PREP";
             case "EN_PREP":
-                return "ENTREGADO"; // Salto directo a ENTREGADO
+                return "EN_CAMINO"; 
+            case "EN_CAMINO":
+                return "ENTREGADO";
             default:
                 return null;
         }
@@ -74,6 +76,8 @@ export const PedidosPage = () => {
             case "CONFIRMADO":
                 return "Empezar Cocción";
             case "EN_PREP":
+                return "Despachar (En Camino)";
+            case "EN_CAMINO":
                 return "Marcar Entregado";
             default:
                 return "";
