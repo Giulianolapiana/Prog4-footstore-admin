@@ -101,7 +101,7 @@ export const PedidosPage = () => {
         <div className="w-full h-full flex flex-col gap-6">
             <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                    Monitoreo de Pedidos (Kanban)
+                    Panel de Pedidos
                 </h1>
                 <p className="text-sm text-gray-500 mt-0.5">
                     Control de comandas en tiempo real y flujo de despacho.
@@ -111,7 +111,12 @@ export const PedidosPage = () => {
             {/* Grid del Tablero Kanban */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 flex-1 items-start">
                 {columnas.map((col) => {
-                    const pedidosColumna = pedidos.filter((p) =>
+                    const pedidosValidos = pedidos.filter(p => 
+                        !(p.estado_actual.codigo === "PENDIENTE" && p.forma_pago?.id === 4) &&
+                        !(p.estado_actual.codigo === "PENDIENTE" && p.forma_pago?.nombre?.toLowerCase().includes("mercado"))
+                    );
+
+                    const pedidosColumna = pedidosValidos.filter((p) =>
                         col.estados.includes(p.estado_actual.codigo),
                     );
 
