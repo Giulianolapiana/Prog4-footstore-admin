@@ -3,12 +3,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { usePedidosAdmin } from "../hook/usePedidosAdmin";
 import { usePermissions } from "../../../shared/hooks/usePermissions";
 import { useWsStore } from "../../../store/useWsStore";
+import { useAdminOrdersFeed } from "../hook/useAdminOrdersFeed";
 import type { IPedido, EstadoPedidoCodigo } from '../types';
 
 export const PedidosPage = () => {
 
     const queryClient = useQueryClient();
-    const { lastMessage, clearLastMessage } = useWsStore();
+    const { clearLastMessage } = useWsStore();
 
     const {
         pedidos,
@@ -20,14 +21,8 @@ export const PedidosPage = () => {
     } = usePedidosAdmin();
     const { canManageOrders, canCancelOrders } = usePermissions();
 
-    //  Si llega un mensaje, invalidamos la cache para refrescar el tablero
-    useEffect(() => {
-        if (lastMessage) {
-            console.log(`[Kanban] Recibido evento WS '${lastMessage.event}' para el pedido ${lastMessage.pedido_id}. Actualizando tablero...`);
-            queryClient.invalidateQueries({ queryKey: ['admin', 'pedidos'] });
-            clearLastMessage();
-        }
-    }, [lastMessage, queryClient, clearLastMessage]);
+    //WebSocket
+    useAdminOrdersFeed();
 
     const columnas: {
         titulo: string;
