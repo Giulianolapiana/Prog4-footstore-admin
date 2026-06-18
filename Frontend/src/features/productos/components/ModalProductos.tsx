@@ -45,13 +45,13 @@ export const ModalProductos = ({
       const productoData: any = {
         nombre: value.nombre,
         descripcion: value.descripcion || undefined,
-        precio_base: Number(value.precio_base),
-        stock_cantidad: Number(value.stock_cantidad),
+        precio_base: Number(value.precio_base) > 0 ? Number(value.precio_base) : 1, // Prevenir 422 gt=0
+        stock_cantidad: Number(value.stock_cantidad) >= 0 ? Number(value.stock_cantidad) : 0,
         disponible: value.disponible,
-        // imágenes subidas a Cloudinary directamente
-        imagenes_url: value.imagenes_url.length > 0 ? value.imagenes_url : undefined,
+        imagenes_url: value.imagenes_url, // Enviar array vacío si no hay
         categoria_ids: value.categoria_ids,
         ingredientes: value.ingredientes,
+        unidad_venta_id: 3, // Unidad por defecto
       };
       try {
         if (productActive) {

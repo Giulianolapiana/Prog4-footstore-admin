@@ -60,7 +60,7 @@ export const PedidosPage = () => {
             case "CONFIRMADO":
                 return "EN_PREP";
             case "EN_PREP":
-                return "EN_CAMINO"; 
+                return "ENTREGADO"; 
             case "EN_CAMINO":
                 return "ENTREGADO";
             default:
@@ -76,7 +76,7 @@ export const PedidosPage = () => {
             case "CONFIRMADO":
                 return "Empezar Cocción";
             case "EN_PREP":
-                return "Despachar (En Camino)";
+                return "Marcar Entregado";
             case "EN_CAMINO":
                 return "Marcar Entregado";
             default:
