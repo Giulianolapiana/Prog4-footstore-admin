@@ -34,10 +34,12 @@ export const ModalProductos = ({
       disponible: productActive?.disponible ?? true,
       imagenes_url: productActive?.imagenes_url ?? ([] as string[]),
       categoria_ids: productActive?.categorias?.map((c) => c.id!) || productActive?.categoria_ids || ([] as number[]),
-      ingredientes: productActive?.ingredientes?.map((i) => ({
-        ingrediente_id: i.id!,
-        es_removible: false
-      })) || ([] as { ingrediente_id: number, es_removible: boolean }[]),
+      ingredientes: productActive?.producto_ingredientes?.map((i) => ({
+        ingrediente_id: i.ingrediente.id!,
+        es_removible: i.es_removible,
+        cantidad: i.cantidad,
+        unidad_medida_id: i.unidad_medida?.id || 2 // default to gramo
+      })) || ([] as { ingrediente_id: number, es_removible: boolean, cantidad: number, unidad_medida_id: number }[]),
     },
     onSubmit: async ({ value }) => {
       setApiError(null);
@@ -45,13 +47,13 @@ export const ModalProductos = ({
       const productoData: any = {
         nombre: value.nombre,
         descripcion: value.descripcion || undefined,
-        precio_base: Number(value.precio_base),
-        stock_cantidad: Number(value.stock_cantidad),
+        precio_base: Number(value.precio_base) > 0 ? Number(value.precio_base) : 1, // Prevenir 422 gt=0
+        stock_cantidad: Number(value.stock_cantidad) >= 0 ? Number(value.stock_cantidad) : 0,
         disponible: value.disponible,
-        // imágenes subidas a Cloudinary directamente
-        imagenes_url: value.imagenes_url.length > 0 ? value.imagenes_url : undefined,
+        imagenes_url: value.imagenes_url, // Enviar array vacío si no hay
         categoria_ids: value.categoria_ids,
         ingredientes: value.ingredientes,
+        unidad_venta_id: 3, // Unidad por defecto
       };
       try {
         if (productActive) {
@@ -288,18 +290,32 @@ export const ModalProductos = ({
             <form.Field
               name="ingredientes"
               children={(field) => {
-                const selectedIngs = field.state.value as { ingrediente_id: number, es_removible: boolean }[];
+                const selectedIngs = field.state.value as { ingrediente_id: number, es_removible: boolean, cantidad: number, unidad_medida_id: number }[];
                 const toggleIng = (ingId: number) => {
                   if (selectedIngs.some((i) => i.ingrediente_id === ingId)) {
                     field.handleChange(selectedIngs.filter((i) => i.ingrediente_id !== ingId));
                   } else {
-                    field.handleChange([...selectedIngs, { ingrediente_id: ingId, es_removible: false }]);
+                    field.handleChange([...selectedIngs, { ingrediente_id: ingId, es_removible: false, cantidad: 100, unidad_medida_id: 2 }]);
                   }
                 };
                 const toggleRemovible = (ingId: number) => {
                   field.handleChange(
                     selectedIngs.map((i) =>
                       i.ingrediente_id === ingId ? { ...i, es_removible: !i.es_removible } : i
+                    )
+                  );
+                };
+                const updateCantidad = (ingId: number, cant: number) => {
+                  field.handleChange(
+                    selectedIngs.map((i) =>
+                      i.ingrediente_id === ingId ? { ...i, cantidad: cant } : i
+                    )
+                  );
+                };
+                const updateUnidad = (ingId: number, uni: number) => {
+                  field.handleChange(
+                    selectedIngs.map((i) =>
+                      i.ingrediente_id === ingId ? { ...i, unidad_medida_id: uni } : i
                     )
                   );
                 };
@@ -344,20 +360,43 @@ export const ModalProductos = ({
                               </label>
 
                               {linkedIng && (
-                                <div className="flex items-center gap-1.5 ml-auto">
-                                  <input
-                                    type="checkbox"
-                                    id={`rem-${ing.id}`}
-                                    checked={linkedIng.es_removible}
-                                    onChange={() => toggleRemovible(ing.id!)}
-                                    className="w-3.5 h-3.5 rounded border-gray-300 text-blue-600"
-                                  />
-                                  <label
-                                    htmlFor={`rem-${ing.id}`}
-                                    className="text-[10px] font-medium text-gray-400 uppercase tracking-tight cursor-pointer"
-                                  >
-                                    Removible
-                                  </label>
+                                <div className="flex flex-col gap-2 mt-2 ml-6 p-2 bg-white rounded border border-gray-100 shadow-sm">
+                                  <div className="flex items-center gap-2">
+                                    <input
+                                      type="number"
+                                      value={linkedIng.cantidad}
+                                      onChange={(e) => updateCantidad(ing.id!, Number(e.target.value))}
+                                      placeholder="Cantidad"
+                                      min="0"
+                                      step="0.01"
+                                      className="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                    />
+                                    <select
+                                      value={linkedIng.unidad_medida_id}
+                                      onChange={(e) => updateUnidad(ing.id!, Number(e.target.value))}
+                                      className="px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-white"
+                                    >
+                                      <option value={1}>kg</option>
+                                      <option value={2}>g</option>
+                                      <option value={3}>ud</option>
+                                      <option value={4}>l</option>
+                                    </select>
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <input
+                                      type="checkbox"
+                                      id={`rem-${ing.id}`}
+                                      checked={linkedIng.es_removible}
+                                      onChange={() => toggleRemovible(ing.id!)}
+                                      className="w-3.5 h-3.5 rounded border-gray-300 text-blue-600"
+                                    />
+                                    <label
+                                      htmlFor={`rem-${ing.id}`}
+                                      className="text-[10px] font-medium text-gray-500 uppercase tracking-tight cursor-pointer"
+                                    >
+                                      Se puede quitar
+                                    </label>
+                                  </div>
                                 </div>
                               )}
                             </div>

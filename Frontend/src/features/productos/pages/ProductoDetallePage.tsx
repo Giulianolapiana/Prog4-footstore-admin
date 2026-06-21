@@ -91,18 +91,19 @@ export const ProductoDetallePage = () => {
             Ingredientes
           </span>
           <div className="flex flex-wrap gap-2">
-            {producto.ingredientes && producto.ingredientes.length > 0 ? (
-              producto.ingredientes.map((ing) => (
+            {producto.producto_ingredientes && producto.producto_ingredientes.length > 0 ? (
+              producto.producto_ingredientes.map((pi) => (
                 <span
-                  key={ing.id}
+                  key={pi.ingrediente.id}
                   className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    ing.es_alergeno
+                    pi.ingrediente.es_alergeno
                       ? "bg-amber-100 text-amber-800 border border-amber-200"
                       : "bg-green-100 text-green-800"
                   }`}
                 >
-                  {ing.es_alergeno && <span className="font-bold">(A) </span>}
-                  {ing.nombre}
+                  {pi.ingrediente.es_alergeno && <span className="font-bold">(A) </span>}
+                  {pi.ingrediente.nombre} 
+                  <span className="opacity-75 font-mono text-[10px] ml-1">({Number(pi.cantidad)} {pi.unidad_medida?.simbolo || 'g'})</span>
                 </span>
               ))
             ) : (

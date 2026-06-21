@@ -2,8 +2,8 @@ import type { IProducto } from '../types';
 import { api } from "../../../shared/api/axios";
 
 export const getProductos = async (): Promise<IProducto[]> => {
-  const { data } = await api.get<IProducto[]>("/productos");
-  return data;
+  const { data } = await api.get<any>("/productos");
+  return data.items ?? data.data ?? data;
 };
 
 export const getProducto = async (id: number): Promise<IProducto> => {
