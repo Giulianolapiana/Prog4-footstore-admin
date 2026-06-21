@@ -132,10 +132,11 @@ export const ProductosPage = () => {
         header: "Producto",
         cell: (info) => {
           const row = info.row.original;
+          const tieneAlergenos = row.producto_ingredientes?.some((pi: any) => pi.ingrediente.es_alergeno);
           return (
             <div className="flex items-center gap-2">
               <span className="font-medium text-gray-800 break-words line-clamp-2 max-w-[200px]" title={row.nombre}>{row.nombre}</span>
-              {row.ingredientes?.some((i: IIngrediente) => i.es_alergeno) && (
+              {tieneAlergenos && (
                 <span title="Contiene alérgenos" className="text-amber-500 cursor-help text-xs font-bold">
                   (A)
                 </span>
